@@ -731,15 +731,35 @@ function setupCustomCursor() {
     mouseY = 0
   let cursorX = 0,
     cursorY = 0
-  const trailFactor = 0.15 // Adjust this value to change the trailing effect (0-1)
+  let lastX = 0,
+    lastY = 0
+  const trailFactor = 0.15
+  let isMoving = false
+  let moveTimeout
 
-  // Update mouse position
   document.addEventListener('mousemove', (e) => {
     mouseX = e.clientX
     mouseY = e.clientY
+
+    // Add blur effect when moving
+    if (!isMoving) {
+      isMoving = true
+      cursor.classList.add('blur')
+      cursorHover.classList.add('blur')
+    }
+
+    // Clear existing timeout
+    clearTimeout(moveTimeout)
+
+    // Set new timeout
+    moveTimeout = setTimeout(() => {
+      isMoving = false
+      cursor.classList.remove('blur')
+      cursorHover.classList.remove('blur')
+      gsap.to([cursor, cursorHover], { scaleX: 1, scaleY: 1, duration: 0.3 })
+    }, 100) // Adjust this value to control how quickly the blur effect fades after stopping
   })
 
-  // Animate cursor position
   function animateCursor() {
     const dx = mouseX - cursorX
     const dy = mouseY - cursorY
@@ -749,6 +769,30 @@ function setupCustomCursor() {
 
     cursorContainer.style.transform = `translate(${cursorX}px, ${cursorY}px)`
 
+    // Calculate speed and direction for stretching
+    const speed = Math.sqrt(
+      Math.pow(cursorX - lastX, 2) + Math.pow(cursorY - lastY, 2)
+    )
+    const angle = Math.atan2(cursorY - lastY, cursorX - lastX)
+    const blurAmount = Math.min(speed / 3, 10) // Adjust these values to control the blur intensity
+
+    // Calculate stretch based on speed
+    const maxStretch = 2 // Maximum stretch factor
+    const stretchX = 1 + (speed / 30) * Math.abs(Math.cos(angle))
+    const stretchY = 1 + (speed / 50) * Math.abs(Math.sin(angle))
+
+    // Apply stretch and rotation
+    gsap.to([cursor, cursorHover], {
+      scaleX: Math.min(stretchX, maxStretch),
+      scaleY: Math.min(stretchY, maxStretch),
+      rotation: angle * (180 / Math.PI),
+      filter: `blur(${blurAmount}px)`,
+      duration: 0.3,
+    })
+
+    lastX = cursorX
+    lastY = cursorY
+
     requestAnimationFrame(animateCursor)
   }
   animateCursor()
@@ -756,14 +800,28 @@ function setupCustomCursor() {
   // Handle hover effects on work_selects_items using GSAP
   workSelectsItems.forEach((item) => {
     item.addEventListener('mouseenter', () => {
-      gsap.to(cursor, { opacity: 0, duration: 0.3 })
+      gsap.to(cursor, { opacity: 0, duration: 0.5 })
       gsap.to(cursorHover, {
         scale: 1,
         opacity: 1,
         duration: 0.3,
         ease: 'power2.out',
+        onComplete: () => {
+          // Create and append pulse rings
+          for (let i = 0; i < 1.5; i++) {
+            setTimeout(() => {
+              const pulseRing = document.createElement('div')
+              pulseRing.classList.add('pulse-ring')
+              cursorContainer.appendChild(pulseRing)
+
+              // Remove the pulse ring after animation completes
+              setTimeout(() => {
+                pulseRing.remove()
+              }, 1500)
+            }, i * 200) // Stagger the start of each pulse
+          }
+        },
       })
-      cursorContainer.classList.add('hovering')
     })
 
     item.addEventListener('mouseleave', () => {
@@ -771,10 +829,13 @@ function setupCustomCursor() {
       gsap.to(cursorHover, {
         scale: 0,
         opacity: 0,
-        duration: 0.3,
+        duration: 0.1,
         ease: 'power2.in',
       })
-      cursorContainer.classList.remove('hovering')
+      // Remove any existing pulse rings
+      cursorContainer
+        .querySelectorAll('.pulse-ring')
+        .forEach((ring) => ring.remove())
     })
   })
 
