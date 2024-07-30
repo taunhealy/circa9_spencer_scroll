@@ -1,0 +1,43 @@
+// Home Hero Work Image change on button hover
+
+document.addEventListener('DOMContentLoaded', function () {
+  // Get all title buttons
+  var workTitleButtons = document.querySelectorAll('.work_title')
+
+  // Get all work cards (images)
+  var HeroImages = document.querySelectorAll('.work_card_image-1.is-hero')
+
+  // Set initial state: Hide all images except the first one
+  HeroImages.forEach(function (image, index) {
+    if (index === 0) {
+      gsap.set(image, { opacity: 1 })
+    } else {
+      gsap.set(image, { opacity: 0.3 })
+    }
+  })
+
+  let currentIndex = 0 // Variable to store the index of the currently hovered button, initially set to 0
+
+  // Loop through each title button
+  workTitleButtons.forEach(function (button, index) {
+    // Add event listener for mouseover event
+    button.addEventListener('mouseover', function () {
+      // Check if there's a currently hovered button
+      if (currentIndex !== index) {
+        // Fade out the previously hovered image
+        gsap.to(HeroImages[currentIndex], { opacity: 1, duration: 0.5 })
+      }
+
+      // Fade in the corresponding work card image
+      gsap.to(HeroImages[index], { opacity: 1, duration: 0.3 })
+
+      // Update currentIndex to the current hovered button index
+      currentIndex = index
+    })
+
+    // Add event listener for mouseout event
+    button.addEventListener('mouseout', function () {
+      // Do nothing on mouseout to keep the current image displayed
+    })
+  })
+})

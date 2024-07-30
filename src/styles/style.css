@@ -1,0 +1,271 @@
+/* Define the blur effect class */
+.modal_container {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.modal_container.active {
+  display: block;
+  opacity: 1;
+}
+
+.work_list :nth-child(4n + 1) {
+  grid-column: span 2;
+}
+.work_list :nth-child(4n + 4) {
+  grid-column: span 2;
+  grid-row: span 1;
+}
+
+.work_list:has(div:last-of-type:nth-of-type(odd)) div:last-of-type {
+  grid-column: 1 / span 2;
+}
+
+.work_card.hidden {
+  opacity: 0;
+  pointer-events: none; /* Prevent interaction with hidden items */
+}
+
+.modal-content {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.modal_container {
+  display: none; /* Hidden by default */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+}
+
+.modal_container.active {
+  display: block; /* Show the modal when active */
+}
+
+#modalVideo {
+  width: 100%;
+  height: 100%;
+  display: none; /* Hidden by default */
+}
+
+.modal_image {
+  width: 100%;
+  height: auto;
+  display: none; /* Hidden by default */
+}
+
+#spinner {
+  display: none; /* Hidden by default */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.work_card_image-1 {
+  filter: blur(0px) brightness(75%); /* Initial blur effect */
+  transition: filter 0.3s ease; /* Smooth transition */
+}
+
+.work_card_image-1:hover {
+  filter: blur(0px) brightness(100%); /* Remove blur on hover */
+}
+
+/* Tablet (landscape) */
+@media screen and (max-width: 767px) {
+  .work_list {
+    grid-template-columns: 9fr; /* Single column for tablets */
+    grid-template-rows: 1fr; /* Single column for tablets */
+  }
+}
+
+/* Mobile (portrait) */
+@media screen and (max-width: 479px) {
+  .work_list {
+    grid-template-columns: 3fr; /* Single column for phones */
+  }
+}
+
+#scrollUpIcon.back_to_top-show {
+  display: flex !important; /* Ensure the icon is displayed when the class is added */
+  opacity: 1 !important; /* Ensure the icon is fully visible */
+  /* Additional styling can go here if needed */
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+.work-filter_title_text {
+  backdrop-filter: blur(20px);
+  transition: 0.5s;
+  box-sizing: border-box;
+}
+
+.work-filter_title_text:hover {
+  background: none;
+  border: 1px solid white;
+  color: white;
+  box-sizing: border-box;
+}
+
+.work-filter_categories_item .work-filter_categories_text {
+  background: black;
+  color: white;
+  border: 1px solid white;
+  box-sizing: border-box;
+  transition: all 0.3s ease; /* Added for smooth transition */
+}
+
+.work-filter_categories_item.active-category .work-filter_categories_text {
+  background: #333;
+  border: 1px solid black;
+  color: white;
+  /* Adjust padding for proper background clip */
+}
+
+.work-filter_categories_text:hover {
+  background: white;
+  border: 1px solid black;
+  color: black;
+  border-radius: 20px;
+}
+
+.footer_about_button {
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  border: 1px solid white; /* Transparent border to maintain the same size */
+  color: white;
+  background: none;
+}
+
+.footer_about_button:hover {
+  background: grey;
+  border: 1px solid white;
+  color: white;
+  box-sizing: border-box;
+  border-radius: 20px;
+}
+
+.about-me_collection-item:hover .about-me_image {
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+/* Ensure the initial state does not have blur */
+.menu_background-2 {
+  filter: none;
+  transition: filter 0.3s ease; /* Ensure smooth transition */
+}
+
+/* Default button styles */
+.work_filter-categories_button {
+  /* Add your default button styles here */
+  color: white; /* Default text color */
+  background-color: black; /* Default background color */
+  transition: color 0.5s, background-color 0.5s;
+}
+
+/* Hover effect */
+.work_filter-categories_button:hover {
+  color: black; /* Text color on hover */
+  background-color: white; /* Background color on hover */
+}
+
+/* Active button style */
+.work_filter-categories_button.active-class {
+  color: white; /* Text color when active */
+  background-color: black; /* Background color when active */
+}
+
+.work_selects_item-highlight {
+  transition: 0.5s;
+}
+
+.page-wrapper {
+  opacity: 0;
+  position: relative;
+  z-index: 1;
+
+  overflow: hidden;
+  box-sizing: border-box;
+  max-width: 68.5vw;
+  color: black;
+}
+
+.work_selects_list {
+  z-index: 3;
+}
+
+/* Add this if you want to enable interactions with sidebar content */
+.home_hero_sidebar_container * {
+  pointer-events: auto;
+}
+
+body {
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.mouse-cursor_container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  width: 20px;
+  height: 20px;
+  transform: translate(-50%, -50%);
+}
+
+.mouse-cursor {
+  width: 100%;
+  height: 100%;
+  background-color: red;
+  border-radius: 50%;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.mouse-cursor_button-hover {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  background-color: transparent;
+  border: 2px solid white;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  display: block;
+}

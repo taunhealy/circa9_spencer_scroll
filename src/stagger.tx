@@ -1,0 +1,28 @@
+ const workWrapper = document.querySelector('.work_wrapper.is-hero')
+    const otherWorkWrappers = document.querySelectorAll(
+      '.work_wrapper:not(.is-hero)'
+    )
+
+    if (workWrapper) {
+      gsap.from(workWrapper.children, {
+        opacity: 0.5,
+        y: 32,
+        stagger: 0.45,
+        duration: 0.45,
+        ease: 'power3.out',
+        delay: 0,
+      })
+    }
+
+    if (otherWorkWrappers) {
+      otherWorkWrappers.forEach((wrapper) => {
+        gsap.from(wrapper.children, {
+          opacity: 0,
+          y: 16,
+          stagger: 0.25,
+          duration: 0.25,
+          ease: 'power3.out',
+          delay: 0.25,
+        })
+      })
+    }

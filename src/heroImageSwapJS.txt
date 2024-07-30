@@ -1,0 +1,28 @@
+document.addEventListener('DOMContentLoaded', () => {
+  const workSelectsItems = document.querySelectorAll('.work_selects_item')
+  const heroImageCover = document.querySelector('.hero_image-cover')
+
+  if (!heroImageCover) {
+    console.error('Hero image cover element not found')
+    return
+  }
+
+  workSelectsItems.forEach((item) => {
+    item.addEventListener('mouseover', () => {
+      // Find the work_card_image-1 inside the hovered work_selects_item
+      const workCardImage = item.querySelector('.work_card_image-1')
+
+      if (workCardImage) {
+        const imageUrl = workCardImage.src
+        if (imageUrl) {
+          heroImageCover.style.backgroundImage = `url('${imageUrl}')`
+        }
+      }
+    })
+
+    item.addEventListener('mouseout', () => {
+      // Optionally revert to a default image or clear the background
+      heroImageCover.style.backgroundImage = ''
+    })
+  })
+})

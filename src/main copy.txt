@@ -1,0 +1,430 @@
+/* eslint-disable no-unused-vars */
+// import Swiper JS
+import gsap from 'gsap'
+import './styles/style.css'
+
+document.addEventListener('DOMContentLoaded', function () {
+  const categoryButtons = document.querySelectorAll(
+    '.work-filter_categories_item'
+  )
+  const workItems = document.querySelectorAll('.work_card')
+  const offset = 90 // Adjust this value as needed
+
+  function fadeInWorkItems(items) {
+    if (items.length > 0) {
+      gsap.fromTo(
+        items,
+        { opacity: 0, autoAlpha: 0.5 },
+        {
+          opacity: 1,
+          autoAlpha: 1,
+          duration: 0.5,
+          stagger: 0.1,
+        }
+      )
+    } else {
+      console.warn('No items to animate.')
+    }
+  }
+
+  function filterAndFadeInWorkItems(categoryName) {
+    const visibleItems = []
+    workItems.forEach((item) => {
+      const category = item.getAttribute('data-work-category').trim()
+      if (category === categoryName || categoryName === 'All') {
+        item.style.display = 'block' // Display the item
+        visibleItems.push(item)
+      } else {
+        item.style.display = 'none' // Hide the item
+      }
+    })
+
+    // Get the top position of the container before filtering
+    const containerTop =
+      document.querySelector('.work_section').getBoundingClientRect().top +
+      window.scrollY -
+      offset
+
+    if (visibleItems.length > 0) {
+      gsap.set(visibleItems, { opacity: 0 }) // Set initial opacity
+      fadeInWorkItems(visibleItems)
+    }
+
+    // Scroll to maintain the position of the container with an offset
+    window.scrollTo({ top: containerTop, behavior: 'smooth' })
+  }
+
+  categoryButtons.forEach((button) => {
+    button.addEventListener('click', (e) => {
+      e.preventDefault()
+
+      const categoryName = button.getAttribute('data-button-category').trim()
+
+      // Filter and fade in work items based on the selected category
+      filterAndFadeInWorkItems(categoryName)
+
+      // Reset styles of all category buttons
+      categoryButtons.forEach((btn) => {
+        btn.classList.remove('active-category')
+      })
+
+      // Set styles for the clicked category button
+      button.classList.add('active-category')
+    })
+  })
+})
+
+// Initialize event listeners when the DOM content is loaded
+document.addEventListener('DOMContentLoaded', function () {
+  // Select the modal container
+  const modal = document.querySelector('.modal_container')
+  console.log(modal) // Check if modal is selected
+
+  let isOpen = false
+
+  // Query and loop through all project items
+  const projectItems = document.querySelectorAll('.work_card')
+
+  // Select the close button in the modal and add event listener
+  const closeButton = document.querySelector('.modal_close_button')
+  if (closeButton) {
+    closeButton.addEventListener('click', closeModal)
+  }
+
+  // Function to handle click on previous button
+  function handlePreviousButtonClick() {
+    if (currentItemIndex > 0) {
+      const modalItem = document.querySelector('.modal-content') // Select the modal item
+      const prevItem = projectItemsArray[currentItemIndex - 1] // Select the previous item
+
+      // Fade out the current modal item and fade in the next item
+      gsap.to(modalItem, {
+        duration: 0.9,
+        opacity: 0,
+        ease: 'power2.inOut',
+        onComplete: () => {
+          updateModalContent(prevItem) // Update modal content with the previous item
+          gsap.to(modalItem, {
+            duration: 0.9,
+            opacity: 1,
+            ease: 'power2.inOut',
+          })
+        },
+      })
+
+      currentItemIndex-- // Move to the previous item
+
+      // Update visibility of next button
+      nextButton.style.opacity = 1
+    }
+
+    // Update visibility of previous button
+    if (currentItemIndex === 0) {
+      gsap.to(prevButton, { duration: 0.9, opacity: 0 }) // Hide previous button when at the beginning of the array
+    } else {
+      gsap.to(prevButton, { duration: 0.9, opacity: 1 }) // Show previous button when not at the beginning of the array
+    }
+  }
+
+  // Function to handle click on next button
+  function handleNextButtonClick() {
+    if (currentItemIndex < projectItemsArray.length - 1) {
+      const modalItem = document.querySelector('.modal-content') // Select the modal item
+      const nextItem = projectItemsArray[currentItemIndex + 1] // Select the next item
+
+      // Select the previous button and add event listener
+      const prevButton = document.querySelector('.prev_button')
+      if (prevButton) {
+        prevButton.addEventListener('click', handlePreviousButtonClick)
+      }
+
+      // Select the next button and add event listener
+      const nextButton = document.querySelector('.next_button')
+      if (nextButton) {
+        nextButton.addEventListener('click', handleNextButtonClick)
+      } else {
+        console.error('Next button not found.')
+      }
+
+      // Fade out the current modal item and fade in the next item
+      gsap.to(modalItem, {
+        duration: 0.9,
+        opacity: 0,
+        ease: 'power2.inOut',
+        onComplete: () => {
+          updateModalContent(nextItem) // Update modal content with the next item
+          gsap.to(modalItem, {
+            duration: 0.9,
+            opacity: 1,
+            ease: 'power2.inOut',
+          })
+        },
+      })
+
+      currentItemIndex++ // Move to the next item
+
+      // Update visibility of previous button
+      prevButton.style.opacity = 1
+    }
+
+    // Update visibility of next button
+    if (currentItemIndex === projectItemsArray.length - 1) {
+      gsap.to(nextButton, { duration: 0.9, opacity: 0 }) // Hide next button when at the end of the array
+    } else {
+      gsap.to(nextButton, { duration: 0.9, opacity: 1 }) // Show next button when not at the end of the array
+    }
+  }
+
+  // Function to close the modal with GSAP animation
+  function closeModal() {
+    console.log('Close modal function called')
+    const modal = document.querySelector('.modal_container')
+
+    if (modal) {
+      // Close the modal with GSAP animation
+      gsap.to(modal, {
+        duration: 0.5,
+        opacity: 0,
+        display: 'none',
+        ease: 'power4.in',
+      })
+    }
+  }
+
+  // Initialize variables for tracking current item index and project items array
+  let currentItemIndex = 0
+  const projectItemsArray = Array.from(projectItems)
+
+  function updateModalContent(item) {
+    // Select modal elements
+    const modalBrand = document.querySelector('.modal_brand')
+    const modalTitle = document.querySelector('.modal_title')
+    const modalImage = document.querySelector('.modal_image')
+    const modalDirectorHeading = document.querySelector(
+      '.modal-director_heading'
+    )
+    const modalVideoContainer = document.getElementById('modalVideo')
+
+    // Check if the clicked item is a main project item or a modal collection list item
+    if (item.dataset.itemSlug) {
+      // Update modal content with data from the main project item
+      modalBrand.innerText = item.querySelector('.work_brand').innerText
+      modalTitle.innerText = item.querySelector('.work_title').innerText
+      modalImage.src = item
+        .querySelector('.work_card_image-1')
+        .getAttribute('src')
+      modalDirectorHeading.innerText = item.querySelector(
+        '.director-name_heading'
+      ).innerText
+    } else if (item.classList.contains('modal_collection-list_item')) {
+      // Update modal content for modal collection list items
+      modalBrand.innerText = item.querySelector(
+        '.modal_collection-list_brand'
+      ).innerText
+
+      modalDirectorHeading.innerText = item.querySelector(
+        '.modal_collection-list_director'
+      ).innerText // Set director heading as needed for modal collection list items
+    }
+
+    // Update modal content with data from the item
+    modalBrand.innerText = item.querySelector('.work_brand').innerText
+    modalTitle.innerText = item.querySelector('.work_title').innerText
+    modalImage.src = item
+      .querySelector('.work_card_image-1')
+      .getAttribute('src')
+    modalDirectorHeading.innerText = item.querySelector(
+      '.director-name_heading'
+    ).innerText
+
+    // Filter collection items by director name
+    const directorName = modalDirectorHeading.innerText // Get director's name from the modal
+    filterCollectionItemsByDirector(directorName) // Call function to filter collection items
+
+    // Get the video URL from data attribute
+    const videoLink = item.getAttribute('data-video-link')
+    console.log('Video URL:', videoLink)
+
+    // Show spinner while the Vimeo player is loading
+    document.getElementById('spinner').style.display = 'block'
+
+    // Dispose of previous player if it exists
+    if (window.player) {
+      window.player
+        .destroy()
+        .then(() => {
+          console.log('Previous player destroyed')
+          initializePlayer(videoLink, modalVideoContainer)
+        })
+        .catch((error) => {
+          console.error('Error destroying player:', error)
+        })
+    } else {
+      initializePlayer(videoLink, modalVideoContainer)
+    }
+  }
+
+  // Function to filter collection items by director name
+  function filterCollectionItemsByDirector(directorName) {
+    const collectionItems = document.querySelectorAll(
+      '.modal_collection-list_item'
+    )
+
+    collectionItems.forEach((item) => {
+      const itemDirectorName = item.getAttribute('Director-Name')
+      if (itemDirectorName === directorName) {
+        item.style.display = 'block' // Show the item
+      } else {
+        item.style.display = 'none' // Hide the item
+      }
+    })
+  }
+
+  // Function to initialize Vimeo player
+  function initializePlayer(videoLink, container) {
+    try {
+      // Show spinner before starting GSAP animations
+      document.getElementById('spinner').style.display = 'block'
+
+      // Fade in the spinner
+      gsap.to('#spinner', {
+        duration: 1,
+        opacity: 1,
+        ease: 'power3.out',
+        onComplete: () => {
+          gsap.to('.spinner', {
+            rotation: 360,
+            duration: 1,
+            ease: 'linear',
+            repeat: -1,
+          }), // Create Vimeo player after spinner is visible
+            // eslint-disable-next-line no-undef
+            (window.player = new Vimeo.Player(container, {
+              url: videoLink,
+              autoplay: false,
+              muted: false,
+              loop: true,
+              preload: true,
+              controls: {
+                play: true,
+                progress: true,
+              },
+              width: '640px', // Set player width to 100% of the container
+              height: '360px', // Set player height to 100% of the container
+            }))
+
+          // Fade in the modal video when the Vimeo player has loaded
+          window.player.on('loaded', () => {
+            // Fade out the spinner gradually over 3 seconds
+            gsap.to('#spinner', {
+              delay: 1, // Delay the fade-out to synchronize with the video fade-in
+              duration: 1,
+              opacity: 0,
+              ease: 'power4.out',
+              onComplete: () => {
+                // Hide spinner after animation is complete
+                document.getElementById('spinner').style.display = 'none'
+              },
+            })
+          })
+        },
+      })
+    } catch (error) {
+      console.error('Error initializing player:', error)
+    }
+  }
+
+  //project item click
+  function handleProjectItemClick(event) {
+    const clickedItem = event.currentTarget
+
+    // Check if the clicked item is a modal collection list item
+    if (clickedItem.classList.contains('modal_collection-list')) {
+      // Handle click on modal collection list item differently
+      // For example, you can update the modal content based on the clicked item
+      updateModalContent(clickedItem)
+    } else {
+      // Handle click on main project item
+      const modal = document.querySelector('.modal_container')
+
+      // Find the index of the clicked item in the projectItemsArray
+      const index = projectItemsArray.indexOf(clickedItem)
+
+      // Update the currentItemIndex
+      currentItemIndex = index
+
+      console.log('Modal element:', modal) // Debugging statement
+
+      if (modal) {
+        // Update modal content with data from the clicked item
+        updateModalContent(clickedItem)
+        // Show the modal with GSAP animation
+        gsap.to(modal, {
+          duration: 0.7,
+          opacity: 1,
+          display: 'block',
+          ease: 'power3.out',
+        })
+      } else {
+        console.error('Modal element not found') // Error message
+      }
+    }
+  }
+
+  // Select the previous button and add event listener
+  const prevButton = document.querySelector('.prev_button')
+  if (prevButton) {
+    prevButton.addEventListener('click', handlePreviousButtonClick)
+  }
+
+  // Select the next button and add event listener
+  const nextButton = document.querySelector('.next_button')
+  if (nextButton) {
+    nextButton.addEventListener('click', handleNextButtonClick)
+  } else {
+    console.error('Next button not found.')
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM Content Loaded')
+
+    const tlNav = gsap.timeline({ paused: true })
+    tlNav.to('.prev_button, .next_button', { color: 'red', duration: 0.5 })
+
+    const navigationButtons = document.querySelectorAll('.navigation_buttons')
+    console.log('Number of navigation buttons:', navigationButtons.length) // Log number of navigation buttons
+
+    navigationButtons.forEach((button) => {
+      console.log('Adding event listeners for button:', button)
+      button.addEventListener('mouseenter', () => {
+        console.log('Mouse entered button:', button)
+        tlNav.play()
+      })
+      button.addEventListener('mouseleave', () => {
+        console.log('Mouse left button:', button)
+        tlNav.reverse()
+      })
+    })
+  })
+
+  document.addEventListener('DOMContentLoaded', (event) => {
+    console.log('DOM fully loaded and parsed')
+
+    // Add event listeners to modal items
+    let modalitems = document.querySelectorAll('.modal_collection-list_item')
+    modalitems.forEach((element) => {
+      element.addEventListener('click', handleProjectItemClick) // Added event listener for project item click
+    })
+
+    // Add event listeners to work items
+    workCards.forEach((element) => {
+      element.addEventListener('click', handleProjectItemClick) // Added event listener for project item click
+    })
+
+    // Add event listeners for Directors work items
+    let workCards = document.querySelectorAll('work_card')
+    workCards.forEach((item) => {
+      item.addEventListener('click', handleProjectItemClick)
+    })
+  })
+})

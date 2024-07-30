@@ -1,0 +1,171 @@
+/ Get the video URL from data attribute
+    const videoLink = item.getAttribute('data-video-link')
+    console.log('Video URL:', videoLink)
+
+    // Show spinner while the Vimeo player is loading
+    document.getElementById('spinner').style.display = 'block'
+
+    // Dispose of previous player if it exists
+    if (window.player) {
+      window.player
+        .destroy()
+        .then(() => {
+          console.log('Previous player destroyed')
+          initializePlayer(videoLink, modalVideoContainer)
+        })
+        .catch((error) => {
+          console.error('Error destroying player:', error)
+        })
+    } else {
+      initializePlayer(videoLink, modalVideoContainer)
+    }
+  }
+
+
+  // Function to initialize Vimeo player
+  function initializePlayer(videoLink, container) {
+    try {
+      // Show spinner before starting GSAP animations
+      document.getElementById('spinner').style.display = 'block'
+
+      // Fade in the spinner
+      gsap.to('#spinner', {
+        duration: 1,
+        opacity: 1,
+        ease: 'power3.out',
+        onComplete: () => {
+          gsap.to('.spinner', {
+            rotation: 360,
+            duration: 1,
+            ease: 'linear',
+            repeat: -1,
+          }), // Create Vimeo player after spinner is visible
+            (window.player = new Vimeo.Player(container, {
+              url: videoLink,
+              autoplay: false,
+              muted: false,
+              loop: true,
+              preload: true,
+              controls: {
+                play: true,
+                progress: true,
+              },
+              width: '640px', // Set player width to 100% of the container
+              height: '360px', // Set player height to 100% of the container
+            }))
+
+          // Fade in the modal video when the Vimeo player has loaded
+          window.player.on('loaded', () => {
+            // Fade out the spinner gradually over 3 seconds
+            gsap.to('#spinner', {
+              delay: 1, // Delay the fade-out to synchronize with the video fade-in
+              duration: 1,
+              opacity: 0,
+              ease: 'power4.out',
+              onComplete: () => {
+                // Hide spinner after animation is complete
+                document.getElementById('spinner').style.display = 'none'
+              },
+            })
+          })
+        },
+      })
+    } catch (error) {
+      console.error('Error initializing player:', error)
+    }
+  }
+
+
+  //project item click
+  function handleProjectItemClick(event) {
+    const clickedItem = event.currentTarget
+
+    // Check if the clicked item is a modal collection list item
+    if (clickedItem.classList.contains('modal_collection-list')) {
+      // Handle click on modal collection list item differently
+      // For example, you can update the modal content based on the clicked item
+      updateModalContent(clickedItem)
+    } else {
+      // Handle click on main project item
+      const modal = document.querySelector('.modal_container')
+
+      // Find the index of the clicked item in the projectItemsArray
+      const index = projectItemsArray.indexOf(clickedItem)
+
+      // Update the currentItemIndex
+      currentItemIndex = index
+
+      console.log('Modal element:', modal) // Debugging statement
+
+      if (modal) {
+        // Update modal content with data from the clicked item
+        updateModalContent(clickedItem)
+        // Show the modal with GSAP animation
+        gsap.to(modal, {
+          duration: 0.7,
+          opacity: 1,
+          display: 'block',
+          ease: 'power3.out',
+        })
+      } else {
+        console.error('Modal element not found') // Error message
+      }
+    }
+  }
+
+  // Select the previous button and add event listener
+  const prevButton = document.querySelector('.prev_button')
+  if (prevButton) {
+    prevButton.addEventListener('click', handlePreviousButtonClick)
+  }
+
+  // Select the next button and add event listener
+  const nextButton = document.querySelector('.next_button')
+  if (nextButton) {
+    nextButton.addEventListener('click', handleNextButtonClick)
+  } else {
+    console.error('Next button not found.')
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM Content Loaded')
+
+    const tlNav = gsap.timeline({ paused: true })
+    tlNav.to('.prev_button, .next_button', { color: 'red', duration: 0.5 })
+
+    const navigationButtons = document.querySelectorAll('.navigation_buttons')
+    console.log('Number of navigation buttons:', navigationButtons.length) // Log number of navigation buttons
+
+    navigationButtons.forEach((button) => {
+      console.log('Adding event listeners for button:', button)
+      button.addEventListener('mouseenter', () => {
+        console.log('Mouse entered button:', button)
+        tlNav.play()
+      })
+      button.addEventListener('mouseleave', () => {
+        console.log('Mouse left button:', button)
+        tlNav.reverse()
+      })
+    })
+  })
+
+  // Add event listeners to modal items
+  let modalitems = document.querySelectorAll('.modal_collection-list_item')
+  modalitems.forEach((element) => {
+    element.addEventListener('mouseover', handleMouseOver)
+    element.addEventListener('mouseout', handleMouseOut)
+    element.addEventListener('click', handleProjectItemClick) // Added event listener for project item click
+  })
+
+  // Add event listeners to work items
+  workCards.forEach((element) => {
+    element.addEventListener('mouseover', handleMouseOver)
+    element.addEventListener('mouseout', handleMouseOut)
+    element.addEventListener('click', handleProjectItemClick) // Added event listener for project item click
+  })
+
+  // Add event listeners for Directors work items
+  let directorWorkCards = document.querySelectorAll('work_card is-directors')
+  directorWorkCards.forEach((item) => {
+    item.addEventListener('click', handleProjectItemClick)
+  })

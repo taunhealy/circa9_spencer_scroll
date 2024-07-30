@@ -1,0 +1,241 @@
+// Import GSAP for animations
+import './styles/style.css'
+import './menu'
+
+// Function to perform stagger animation on elements within the page-wrapper
+function staggerAnimation() {
+  const wrapper = document.getElementById('page-wrapper')
+  wrapper.style.display = 'flex' // Set visibility to visible before animating
+  wrapper.style.opacity = 100
+  const elements = wrapper.children
+
+  gsap.from(elements, {
+    opacity: 0,
+    y: 32,
+    stagger: 0.45,
+    duration: 0.45,
+    ease: 'power2.out',
+  })
+}
+
+// Call staggerAnimation function on page load
+document.addEventListener('DOMContentLoaded', staggerAnimation)
+
+document.addEventListener('DOMContentLoaded', setupModal) // Initialize modal functionality
+
+// Function to handle modal functionality
+function setupModal() {
+  const modal = document.querySelector('.modal_container')
+  const closeButton = document.querySelector('#button-close')
+  const nextButton = document.querySelector('#button-next')
+  const prevButton = document.querySelector('#button-prev')
+  const modalVideo = document.querySelector('#modalVideo')
+  const modalImage = document.querySelector('.modal_image')
+  const spinner = document.querySelector('#spinner')
+  const workItems = document.querySelectorAll('.work_card')
+
+  console.log('modal:', modal)
+  console.log('closeButton:', closeButton)
+  console.log('nextButton:', nextButton)
+  console.log('prevButton:', prevButton)
+  console.log('modalVideo:', modalVideo)
+  console.log('modalImage:', modalImage)
+  console.log('spinner:', spinner)
+
+  function openModal(item) {
+    console.log('Opening modal') // Debug statement
+    const videoLink = item.dataset.videoLink
+    const imageSrc = item.querySelector('img').src
+    const brand = item.querySelector('.work_brand').textContent
+    const title = item.querySelector('.work_title').textContent
+    const directorName = item.dataset.director // Get the 'Directed By' information
+
+    console.log(`Video link: ${videoLink}`) // Debug statement
+    console.log(`Director: ${directorName}`) // Debug statement
+
+    modal.querySelector('.modal_brand').textContent = brand
+    modal.querySelector('.modal_title').textContent = title
+    modal.querySelector('.modal-director_heading').textContent = directorName
+
+    if (videoLink) {
+      const vimeoId = videoLink.split('/').pop()
+      const embedUrl = `https://player.vimeo.com/video/${vimeoId}`
+      console.log(`Loading video: ${embedUrl}`) // Debug statement
+      spinner.style.display = 'block'
+      modalVideo.style.display = 'block'
+      modalImage.style.display = 'none'
+
+      const iframe = document.createElement('iframe')
+      iframe.src = embedUrl
+      iframe.width = '100%'
+      iframe.height = '100%'
+      iframe.frameBorder = '0'
+      iframe.allow = 'autoplay; fullscreen'
+      iframe.allowFullscreen = true
+
+      modalVideo.innerHTML = ''
+      modalVideo.appendChild(iframe)
+
+      iframe.onload = () => {
+        console.log('Iframe loaded') // Debug statement
+        spinner.style.display = 'none'
+      }
+
+      iframe.onerror = () => {
+        console.error('Iframe failed to load') // Debug statement
+        spinner.style.display = 'none'
+      }
+    } else {
+      console.log('No video link, showing image') // Debug statement
+      modalVideo.style.display = 'none'
+      modalImage.style.display = 'block'
+      modalImage.src = imageSrc
+    }
+
+    // Ensure the modal is visible before animating
+    modal.style.display = 'block'
+
+    // GSAP animation
+    const tl = gsap.timeline()
+    tl.set(item.querySelector('.work_card-purple'), {
+      display: 'block',
+      opacity: 0.65,
+    }).to(modal, { opacity: 1, duration: 0.1, ease: 'power3.out' }, '<')
+
+    modal.classList.add('active')
+  }
+
+  function closeModal() {
+    console.log('Closing modal') // Debug statement
+    const tl = gsap.timeline({
+      onComplete: () => {
+        modal.style.display = 'none' // Set display to none after the animation completes
+        modal.classList.remove('active')
+        modalVideo.innerHTML = ''
+      },
+    })
+    tl.to(modal, { opacity: 0, duration: 0.21, ease: 'power3.out' })
+  }
+
+  function nextItem() {
+    console.log('Next item') // Debug statement
+    let currentItem = document.querySelector('.work_card.is-active')
+    let nextItem = currentItem.nextElementSibling
+    if (!nextItem) {
+      nextItem = workItems[0]
+    }
+    currentItem.classList.remove('is-active')
+    nextItem.classList.add('is-active')
+    openModal(nextItem)
+  }
+
+  function prevItem() {
+    console.log('Previous item') // Debug statement
+    let currentItem = document.querySelector('.work_card.is-active')
+    let prevItem = currentItem.previousElementSibling
+    if (!prevItem) {
+      prevItem = workItems[workItems.length - 1]
+    }
+    currentItem.classList.remove('is-active')
+    prevItem.classList.add('is-active')
+    openModal(prevItem)
+  }
+
+  workItems.forEach((item) => {
+    item.addEventListener('click', () => {
+      console.log('Work item clicked') // Debug statement
+      document
+        .querySelector('.work_card.is-active')
+        ?.classList.remove('is-active')
+      item.classList.add('is-active')
+      openModal(item)
+    })
+  })
+
+  closeButton.addEventListener('click', closeModal)
+  nextButton.addEventListener('click', nextItem)
+  prevButton.addEventListener('click', prevItem)
+
+  // Close modal when clicking outside of the modal content
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeModal()
+    }
+  })
+}
+
+/* eslint-disable no-undef */
+
+// Filter and fade in work items
+document.addEventListener('DOMContentLoaded', function () {
+  const categoryButtons = document.querySelectorAll(
+    '.work-filter_categories_item'
+  )
+  const workItems = document.querySelectorAll('.work_card')
+  const offset = 30 // Adjust this value as needed
+
+  function fadeInWorkItems(items) {
+    if (items.length > 0) {
+      gsap.fromTo(
+        items,
+        { opacity: 0, autoAlpha: 0.5 },
+        {
+          opacity: 1,
+          autoAlpha: 1,
+          duration: 0.5,
+          stagger: 0.1,
+        }
+      )
+    } else {
+      console.warn('No items to animate.')
+    }
+  }
+
+  function filterAndFadeInWorkItems(categoryName) {
+    const visibleItems = []
+    workItems.forEach((item) => {
+      const category = item.getAttribute('data-work-category').trim()
+      if (category === categoryName || categoryName === 'All') {
+        item.style.display = 'block' // Display the item
+        visibleItems.push(item)
+      } else {
+        item.style.display = 'none' // Hide the item
+      }
+    })
+
+    // Get the top position of the container before filtering
+    const containerTop =
+      document
+        .querySelector('.work_filter-categories_container')
+        .getBoundingClientRect().top +
+      window.scrollY -
+      offset
+
+    if (visibleItems.length > 0) {
+      gsap.set(visibleItems, { opacity: 0 }) // Set initial opacity
+      fadeInWorkItems(visibleItems)
+    }
+
+    // Scroll to maintain the position of the container with an offset
+    window.scrollTo({ top: containerTop, behavior: 'smooth' })
+  }
+
+  categoryButtons.forEach((button) => {
+    button.addEventListener('click', (e) => {
+      e.preventDefault()
+
+      const categoryName = button.getAttribute('data-button-category').trim()
+
+      // Filter and fade in work items based on the selected category
+      filterAndFadeInWorkItems(categoryName)
+
+      // Reset styles of all category buttons
+      categoryButtons.forEach((btn) => {
+        btn.classList.remove('active-category')
+      })
+
+      // Set styles for the clicked category button
+      button.classList.add('active-category')
+    })
+  })
+})
