@@ -720,6 +720,41 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     gsap.set(aboutProfileContainer, { opacity: 0 })
 
+    // ScrollTrigger for work section start
+    ScrollTrigger.create({
+      trigger: workSection,
+      start: 'top 80%',
+      end: 'bottom top',
+      onEnter: () => {
+        gsap.to(workFilterCategories, {
+          opacity: 1,
+          backgroundColor: 'white',
+          borderColor: 'black',
+          duration: 0.5,
+        })
+        gsap.to(workFilterCategoriesButtons, {
+          opacity: 1,
+          duration: 0.5,
+        })
+        gsap.to(aboutProfileContainer, {
+          opacity: 0,
+          duration: 0.5,
+        })
+      },
+      onLeaveBack: () => {
+        gsap.to(workFilterCategories, {
+          opacity: 0,
+          backgroundColor: 'transparent',
+          borderColor: 'white',
+          duration: 0.5,
+        })
+        gsap.to(workFilterCategoriesButtons, {
+          opacity: 0,
+          duration: 0.5,
+        })
+      },
+    })
+
     // ScrollTrigger for about section
     ScrollTrigger.create({
       trigger: aboutSection,
@@ -741,65 +776,14 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       onLeaveBack: () => {
         gsap.to(workSelectsListHero, {
-          opacity: 1,
-          duration: 0.5,
-        })
-        gsap.to(aboutProfileContainer, {
-          opacity: 0,
-          duration: 0.5,
-        })
-        gsap.to(workFilterCategoriesButtons, {
-          opacity: 0,
-          duration: 0.5,
-        })
-      },
-    })
-
-    // ScrollTrigger for work section start
-    ScrollTrigger.create({
-      trigger: workSection,
-      start: 'top 80%',
-      end: 'top 20%',
-      onEnter: () => {
-        gsap.to(workFilterCategories, {
-          opacity: 1,
-          backgroundColor: 'white',
-          borderColor: 'black',
-          duration: 0.5,
-        })
-        gsap.to(workFilterCategoriesButtons, {
-          opacity: 1,
-          duration: 0.5,
-        })
-        gsap.to(aboutProfileContainer, {
-          opacity: 0,
-          duration: 0.5,
-        })
-      },
-      onLeave: () => {
-        gsap.to(workFilterCategoriesButtons, {
-          opacity: 0,
-          duration: 0.5,
-        })
-      },
-      onEnterBack: () => {
-        gsap.to(workFilterCategoriesButtons, {
-          opacity: 1,
-          duration: 0.5,
-        })
-      },
-      onLeaveBack: () => {
-        gsap.to(workFilterCategories, {
-          opacity: 0.2,
-          backgroundColor: 'transparent',
-          borderColor: 'white',
-          duration: 0.5,
-        })
-        gsap.to(workFilterCategoriesButtons, {
           opacity: 0,
           duration: 0.5,
         })
         gsap.to(aboutProfileContainer, {
+          opacity: 0,
+          duration: 0.5,
+        })
+        gsap.to(workFilterCategoriesButtons, {
           opacity: 1,
           duration: 0.5,
         })
