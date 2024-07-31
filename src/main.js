@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
   staggerAnimation()
   setupCategoryFiltering()
   setupWorkSelectsModal()
-  setupCustomCursor()
+  // setupCustomCursor()
 })
 
 //Scroll Back To Top
@@ -299,13 +299,14 @@ function staggerAnimation() {
 // Filter by category button click
 function setupCategoryFiltering() {
   const filterButtons = document.querySelectorAll('[data-button-category]')
-  const items = document.querySelectorAll('.work_selects_item')
+  const workSection = document.querySelector('#work_wrap')
+  const items = workSection.querySelectorAll('.work_selects_item')
 
   filterButtons.forEach((button) => {
     button.addEventListener('click', () => {
       const category = button.dataset.buttonCategory
 
-      // First, set the display property for all items
+      // First, set the display property for all items in the work section
       items.forEach((item) => {
         if (category === 'all' || item.dataset.workCategory === category) {
           gsap.set(item, { display: 'block' })
@@ -531,63 +532,66 @@ document.addEventListener('DOMContentLoaded', function () {
 //Background Hero Cover Image Animation On Hover
 document.addEventListener('DOMContentLoaded', () => {
   const heroImageCover = document.querySelector('.hero_image-cover')
-  const workSelectsItems = document.querySelectorAll('.work_selects_item')
+  const heroWorkSelectsItems = document.querySelectorAll(
+    '.work_selects_item.is-hero'
+  )
 
   if (!heroImageCover) {
     console.error('Hero image cover not found')
     return
   }
 
-  console.log(
-    'Initial computed styles:',
-    window.getComputedStyle(heroImageCover)
-  )
+  let activeItem = null
 
-  function setBackgroundImage(imageUrl) {
-    console.log(`Setting background image to: ${imageUrl}`)
+  function setBackgroundImage(imageUrl, newActiveItem) {
+    gsap.to(heroImageCover, {
+      opacity: 0,
+      duration: 0.5,
+      ease: 'power3.out',
+      onComplete: () => {
+        heroImageCover.style.backgroundImage = `url('${imageUrl}')`
+        gsap.to(heroImageCover, {
+          opacity: 1,
+          duration: 0.5,
+          ease: 'power3.out',
+        })
+      },
+    })
 
-    // Set the background image using setAttribute
-    heroImageCover.setAttribute(
-      'style',
-      `background-image: url('${imageUrl}'); background-size: cover; background-position: center; background-repeat: no-repeat;`
-    )
+    // Reset all items to inactive state
+    heroWorkSelectsItems.forEach((item) => {
+      item.classList.remove('active')
+      gsap.to(item.querySelector('.work_card_image-1'), {
+        opacity: 0.5,
+        duration: 0.3,
+      })
+    })
 
-    // Force a repaint
-    heroImageCover.style.display = 'none'
-    heroImageCover.offsetHeight // Trigger a reflow
-    heroImageCover.style.display = 'block'
-
-    // Log the results
-    console.log('After setting background:')
-    console.log(
-      'Element style attribute:',
-      heroImageCover.getAttribute('style')
-    )
-    console.log(
-      'Computed backgroundImage:',
-      window.getComputedStyle(heroImageCover).backgroundImage
-    )
-    console.log(
-      'Full computed styles:',
-      window.getComputedStyle(heroImageCover)
-    )
+    // Set new active item
+    activeItem = newActiveItem
+    activeItem.classList.add('active')
+    gsap.to(activeItem.querySelector('.work_card_image-1'), {
+      opacity: 1,
+      duration: 0.3,
+    })
   }
 
-  workSelectsItems.forEach((item) => {
+  heroWorkSelectsItems.forEach((item) => {
+    const workCardImage = item.querySelector('.work_card_image-1')
+
     item.addEventListener('mouseenter', () => {
-      const workCardImage = item.querySelector('.work_card_image-1')
       if (workCardImage && workCardImage.src) {
-        setBackgroundImage(workCardImage.src)
+        setBackgroundImage(workCardImage.src, item)
       }
     })
   })
 
-  // Set initial image
-  if (workSelectsItems.length > 0) {
+  // Set initial image and active state
+  if (heroWorkSelectsItems.length > 0) {
     const firstItemImage =
-      workSelectsItems[0].querySelector('.work_card_image-1')
+      heroWorkSelectsItems[0].querySelector('.work_card_image-1')
     if (firstItemImage) {
-      setBackgroundImage(firstItemImage.src)
+      setBackgroundImage(firstItemImage.src, heroWorkSelectsItems[0])
     }
   }
 })
@@ -599,8 +603,16 @@ document.addEventListener('DOMContentLoaded', () => {
   )
   workItemButtons.forEach((button) => {
     button.addEventListener('click', function () {
-      workItemButtons.forEach((btn) => btn.classList.remove('active-class'))
+      workItemButtons.forEach((btn) => {
+        btn.classList.remove('active-class')
+        // Reset to default state
+        btn.style.color = 'black'
+        btn.style.backgroundColor = 'white'
+      })
       this.classList.add('active-class')
+      // Invert colors for active state
+      this.style.color = 'white'
+      this.style.backgroundColor = 'black'
     })
   })
 })
@@ -665,182 +677,214 @@ document.addEventListener('DOMContentLoaded', () => {
   const homeHeroSidebar = document.querySelector('.home_hero_sidebar_container')
   const homeWorkSelects = document.querySelector('.home_work-selects')
   const workSection = document.querySelector('#work_wrap')
-  const workFilterTitle = document.querySelector('.work-filter_title_container')
+  const aboutSection = document.querySelector('#about-section')
+  const workFilterCategories = document.querySelectorAll(
+    '.work-filter_categories_item'
+  )
+  const workSelectsListHero = document.querySelector(
+    '.work_selects_list.is-hero'
+  )
+  const workFilterCategoriesButtons = document.querySelectorAll(
+    '.work_filter-categories_button'
+  )
+  const aboutProfileContainer = document.querySelector(
+    '.about_profile_container'
+  )
+  const footer = document.querySelector('#contact_wrap')
 
-  console.log('homeHeroSidebar:', homeHeroSidebar)
-  console.log('homeWorkSelects:', homeWorkSelects)
+  if (
+    homeWorkSelects &&
+    homeHeroSidebar &&
+    workSection &&
+    aboutSection &&
+    workFilterCategories.length &&
+    workSelectsListHero &&
+    workFilterCategoriesButtons.length &&
+    aboutProfileContainer &&
+    footer
+  ) {
+    console.log('All required elements found, creating ScrollTriggers')
 
-  if (homeWorkSelects && homeHeroSidebar && workSection && workFilterTitle) {
-    console.log('All required elements found, creating ScrollTrigger')
+    // Set initial states
+    gsap.set(workFilterCategories, {
+      opacity: 0.2,
+      backgroundColor: 'transparent',
+      borderColor: 'white',
+    })
+    gsap.set(workSelectsListHero, { opacity: 1 })
+    gsap.set(workFilterCategoriesButtons, {
+      opacity: 0,
+      color: 'black',
+      backgroundColor: 'white',
+      borderColor: 'black',
+    })
+    gsap.set(aboutProfileContainer, { opacity: 0 })
+
+    // ScrollTrigger for about section
     ScrollTrigger.create({
-      trigger: homeWorkSelects,
-      start: 'top 10%',
-      end: () => `+=${workSection.offsetHeight}`,
+      trigger: aboutSection,
+      start: 'top bottom',
+      end: 'top center',
       onEnter: () => {
-        console.log('ScrollTrigger onEnter fired')
-        gsap.to(homeHeroSidebar, {
-          backgroundColor: 'white',
-          duration: 0.5,
-        })
-        gsap.to(homeHeroSidebar.querySelectorAll('*'), {
-          color: 'black',
-          duration: 0.5,
-        })
-        gsap.to(workFilterTitle, {
+        gsap.to(workSelectsListHero, {
           opacity: 0,
-          display: 'none',
+          duration: 0.5,
+        })
+        gsap.to(aboutProfileContainer, {
+          opacity: 1,
+          duration: 0.5,
+        })
+        gsap.to(workFilterCategoriesButtons, {
+          opacity: 0,
           duration: 0.5,
         })
       },
       onLeaveBack: () => {
-        console.log('ScrollTrigger onLeaveBack fired')
-        gsap.to(homeHeroSidebar, {
-          backgroundColor: 'black',
-          duration: 0.5,
-        })
-        gsap.to(homeHeroSidebar.querySelectorAll('*'), {
-          color: 'white',
-          duration: 0.5,
-        })
-        gsap.to(workFilterTitle, {
+        gsap.to(workSelectsListHero, {
           opacity: 1,
-          display: 'block',
+          duration: 0.5,
+        })
+        gsap.to(aboutProfileContainer, {
+          opacity: 0,
+          duration: 0.5,
+        })
+        gsap.to(workFilterCategoriesButtons, {
+          opacity: 0,
           duration: 0.5,
         })
       },
-      markers: true,
+    })
+
+    // ScrollTrigger for work section start
+    ScrollTrigger.create({
+      trigger: workSection,
+      start: 'top 80%',
+      end: 'top 20%',
+      onEnter: () => {
+        gsap.to(workFilterCategories, {
+          opacity: 1,
+          backgroundColor: 'white',
+          borderColor: 'black',
+          duration: 0.5,
+        })
+        gsap.to(workFilterCategoriesButtons, {
+          opacity: 1,
+          duration: 0.5,
+        })
+        gsap.to(aboutProfileContainer, {
+          opacity: 0,
+          duration: 0.5,
+        })
+      },
+      onLeave: () => {
+        gsap.to(workFilterCategoriesButtons, {
+          opacity: 0,
+          duration: 0.5,
+        })
+      },
+      onEnterBack: () => {
+        gsap.to(workFilterCategoriesButtons, {
+          opacity: 1,
+          duration: 0.5,
+        })
+      },
+      onLeaveBack: () => {
+        gsap.to(workFilterCategories, {
+          opacity: 0.2,
+          backgroundColor: 'transparent',
+          borderColor: 'white',
+          duration: 0.5,
+        })
+        gsap.to(workFilterCategoriesButtons, {
+          opacity: 0,
+          duration: 0.5,
+        })
+        gsap.to(aboutProfileContainer, {
+          opacity: 1,
+          duration: 0.5,
+        })
+      },
+    })
+
+    // ScrollTrigger for footer
+    ScrollTrigger.create({
+      trigger: footer,
+      start: 'top bottom',
+      onEnter: () => {
+        gsap.to(workFilterCategories, {
+          opacity: 0.2,
+          backgroundColor: 'transparent',
+          borderColor: 'white',
+          duration: 0.5,
+        })
+        gsap.to(workFilterCategoriesButtons, {
+          opacity: 0,
+          duration: 0.5,
+        })
+      },
+      onLeaveBack: () => {
+        gsap.to(workFilterCategories, {
+          opacity: 1,
+          backgroundColor: 'white',
+          borderColor: 'black',
+          duration: 0.5,
+        })
+        gsap.to(workFilterCategoriesButtons, {
+          opacity: 1,
+          duration: 0.5,
+        })
+      },
+    })
+
+    // ScrollTrigger for sidebar transition
+    ScrollTrigger.create({
+      trigger: workSection,
+      start: 'top 80%',
+      end: 'top 20%',
+      onUpdate: (self) => {
+        const progress = self.progress
+        gsap.to(homeHeroSidebar, {
+          backgroundColor: gsap.utils.interpolate(
+            '#000000',
+            '#ffffff',
+            progress
+          ),
+          duration: 0,
+        })
+        gsap.to(
+          homeHeroSidebar.querySelectorAll(
+            '*:not(.work_filter-categories_button)'
+          ),
+          {
+            color: gsap.utils.interpolate('#ffffff', '#000000', progress),
+            duration: 0,
+          }
+        )
+      },
+    })
+
+    // Add hover effects for work filter categories
+    workFilterCategories.forEach((item) => {
+      item.addEventListener('mouseenter', () => {
+        if (ScrollTrigger.isInViewport(workSection)) {
+          gsap.to(item, {
+            backgroundColor: 'rgba(0, 0, 0, 0.2)', // 80% opacity black
+            duration: 0.3,
+          })
+        }
+      })
+      item.addEventListener('mouseleave', () => {
+        if (ScrollTrigger.isInViewport(workSection)) {
+          gsap.to(item, {
+            backgroundColor: 'white',
+            duration: 0.3,
+          })
+        }
+      })
     })
   } else {
     console.log('One or more required elements not found')
   }
 })
 
-// Custom cursor functionality
-function setupCustomCursor() {
-  const cursorContainer = document.querySelector('.mouse-cursor_container')
-  const cursor = document.querySelector('.mouse-cursor')
-  const cursorHover = document.querySelector('.mouse-cursor_button-hover')
-  const workSelectsItems = document.querySelectorAll('.work_selects_item')
-
-  if (!cursorContainer || !cursor || !cursorHover) {
-    console.error('Custom cursor elements not found')
-    return
-  }
-
-  let mouseX = 0,
-    mouseY = 0
-  let cursorX = 0,
-    cursorY = 0
-  let lastX = 0,
-    lastY = 0
-  const trailFactor = 0.15
-  let isMoving = false
-  let moveTimeout
-
-  document.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX
-    mouseY = e.clientY
-
-    // Add blur effect when moving
-    if (!isMoving) {
-      isMoving = true
-      cursor.classList.add('blur')
-      cursorHover.classList.add('blur')
-    }
-
-    // Clear existing timeout
-    clearTimeout(moveTimeout)
-
-    // Set new timeout
-    moveTimeout = setTimeout(() => {
-      isMoving = false
-      cursor.classList.remove('blur')
-      cursorHover.classList.remove('blur')
-      gsap.to([cursor, cursorHover], { scaleX: 1, scaleY: 1, duration: 0.3 })
-    }, 100) // Adjust this value to control how quickly the blur effect fades after stopping
-  })
-
-  function animateCursor() {
-    const dx = mouseX - cursorX
-    const dy = mouseY - cursorY
-
-    cursorX += dx * trailFactor
-    cursorY += dy * trailFactor
-
-    cursorContainer.style.transform = `translate(${cursorX}px, ${cursorY}px)`
-
-    // Calculate speed and direction for stretching
-    const speed = Math.sqrt(
-      Math.pow(cursorX - lastX, 2) + Math.pow(cursorY - lastY, 2)
-    )
-    const angle = Math.atan2(cursorY - lastY, cursorX - lastX)
-    const blurAmount = Math.min(speed / 3, 10) // Adjust these values to control the blur intensity
-
-    // Calculate stretch based on speed
-    const maxStretch = 2 // Maximum stretch factor
-    const stretchX = 1 + (speed / 30) * Math.abs(Math.cos(angle))
-    const stretchY = 1 + (speed / 50) * Math.abs(Math.sin(angle))
-
-    // Apply stretch and rotation
-    gsap.to([cursor, cursorHover], {
-      scaleX: Math.min(stretchX, maxStretch),
-      scaleY: Math.min(stretchY, maxStretch),
-      rotation: angle * (180 / Math.PI),
-      filter: `blur(${blurAmount}px)`,
-      duration: 0.3,
-    })
-
-    lastX = cursorX
-    lastY = cursorY
-
-    requestAnimationFrame(animateCursor)
-  }
-  animateCursor()
-
-  // Handle hover effects on work_selects_items using GSAP
-  workSelectsItems.forEach((item) => {
-    item.addEventListener('mouseenter', () => {
-      gsap.to(cursor, { opacity: 0, duration: 0.5 })
-      gsap.to(cursorHover, {
-        scale: 1,
-        opacity: 1,
-        duration: 0.3,
-        ease: 'power2.out',
-        onComplete: () => {
-          // Create and append pulse rings
-          for (let i = 0; i < 1.5; i++) {
-            setTimeout(() => {
-              const pulseRing = document.createElement('div')
-              pulseRing.classList.add('pulse-ring')
-              cursorContainer.appendChild(pulseRing)
-
-              // Remove the pulse ring after animation completes
-              setTimeout(() => {
-                pulseRing.remove()
-              }, 1500)
-            }, i * 200) // Stagger the start of each pulse
-          }
-        },
-      })
-    })
-
-    item.addEventListener('mouseleave', () => {
-      gsap.to(cursor, { opacity: 0.7, duration: 0.3 })
-      gsap.to(cursorHover, {
-        scale: 0,
-        opacity: 0,
-        duration: 0.1,
-        ease: 'power2.in',
-      })
-      // Remove any existing pulse rings
-      cursorContainer
-        .querySelectorAll('.pulse-ring')
-        .forEach((ring) => ring.remove())
-    })
-  })
-
-  console.log('Custom cursor setup complete')
-}
-
-// Call the function immediately
-setupCustomCursor()
+// ... rest of the code ...
