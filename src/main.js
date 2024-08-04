@@ -1,9 +1,10 @@
 import './styles/style.css'
+
+import './menu'
+import './layoutArray'
 import gsap from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
 import Lenis from 'lenis'
-import './menu'
-import './layoutArray'
 
 // Initialize Lenis
 const lenis = new Lenis({
@@ -808,3 +809,10 @@ function fadeInPageElements() {
     console.error('home_hero_sidebar_container or page-wrapper not found')
   }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Move your DOM-manipulating code here
+  // For example:
+  // const elements = document.querySelectorAll('.some-class');
+  // ... rest of your code ...
+})

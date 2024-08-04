@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [eslintPlugin({ cache: false })],
   server: {
     host: 'localhost',
-    cors: '*',
+    cors: false, // Disable CORS
     hmr: {
       host: 'localhost',
       protocol: 'ws',
@@ -20,15 +20,15 @@ export default defineConfig({
     rollupOptions: {
       input: './src/main.js',
       output: {
-        format: 'umd',
-        entryFileNames: 'main.js',
+        format: 'umd', // Universal Module Definition for compatibility
+        entryFileNames: '[name].js', // Use placeholders for better file naming
         esModule: false,
         compact: true,
         globals: {
           jquery: '$',
         },
       },
-      external: ['jquery'],
+      external: ['jquery'], // jQuery will not be bundled, assumed to be loaded externally
     },
   },
 })
