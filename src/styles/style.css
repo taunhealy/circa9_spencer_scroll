@@ -226,26 +226,24 @@ html.lenis body {
 
 body {
   position: relative;
-  box-sizing: border-box; 
+  box-sizing: border-box;
   overflow: hidden;
   /* visibility: hidden; */
   /* opacity: 0; */
   /* transition: opacity 0.3s ease; */
 }
 
-
 .work_selects_item {
   /* ... existing styles ... */
   border: 1px solid transparent;
 }
-
 
 .work_selects_item.active {
   /* This class will be added/removed by JavaScript */
   border-color: white;
 }
 
-.hero_image-cover { 
+.hero_image-cover {
   width: 100%;
   height: 100%;
   background-size: cover;
@@ -265,106 +263,3 @@ body {
 #about-section {
   scroll-margin-top: 100px; /* Adjust this value based on your layout */
 }
-
-/*
-.mouse-cursor_container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  z-index: 9999;
-  width: 10px;
-  height: 10px;
-  transform: translate(-50%, -50%);
-}
-
-.mouse-cursor {
-  width: 100%;
-  height: 100%;
-  background-color: cyan;
-  border-radius: 50%;
-  opacity: 0.5;
-  transition: opacity 0.3s ease;
-}
-
-.mouse-cursor_button-hover {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 40px;
-  height: 40px;
-  background-color: transparent;
-  border: 2px solid cyan;
-  border-radius: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  opacity: 0;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-  display: block;
-  animation: wobble 2.5s ease-in-out infinite;
-}
-
-.mouse-cursor_button-hover::after {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  border: 2px solid pink;
-  border-radius: 10%;
-  opacity: 0;
-  animation: breathe 1s ease-in-out infinite;
-}
-
-.mouse-cursor.blur,
-.mouse-cursor_button-hover.blur {
-  filter: blur(10px);
-}
-
-@keyframes wobble {
-  0%,
-  100% {
-    transform: translate(-50%, -50%) scale(1);
-  }
-  33% {
-    transform: translate(-50%, -50%) scale(1.05, 0.95);
-  }
-  66% {
-    transform: translate(-50%, -50%) scale(0.95, 1.05);
-  }
-}
-
-@keyframes breathe {
-  0%,
-  100% {
-    opacity: 0.2;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(1.1);
-  }
-}
-
-@keyframes pulseWave {
-  0% {
-    transform: translate(-50%, -50%) scale(0);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(2);
-    opacity: 0;
-  }
-}
-
-.pulse-ring {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 20px;
-  height: 20px;
-  border: 2px solid pink;
-  border-radius: 70%;
-  animation: pulseWave 1.5s ease-out infinite;
-}
-/*
