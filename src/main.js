@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 //Scroll Back To Top
 document.addEventListener('DOMContentLoaded', () => {
-  const scrollButton = document.getElementById('#scroll-button')
+  const scrollButton = document.getElementById('scroll-button')
 
   if (!scrollButton) {
     console.log('No element with the ID "scroll-button" found.')
