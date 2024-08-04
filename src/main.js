@@ -788,4 +788,3 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('One or more required elements not found')
   }
 })
-
