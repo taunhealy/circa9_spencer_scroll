@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
   staggerAnimation()
   setupCategoryFiltering()
   setupWorkSelectsModal()
+  fadeInPageElements()
   // setupCustomCursor()
 })
 
@@ -788,3 +789,22 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('One or more required elements not found')
   }
 })
+
+// Add this new function
+function fadeInPageElements() {
+  const homeHeroSidebar = document.querySelector('.home_hero_sidebar_container')
+  const pageWrapper = document.querySelector('.page-wrapper')
+
+  if (homeHeroSidebar && pageWrapper) {
+    gsap.set([homeHeroSidebar, pageWrapper], { opacity: 0 })
+
+    gsap.to([homeHeroSidebar, pageWrapper], {
+      opacity: 1,
+      duration: 1,
+      ease: 'power2.out',
+      stagger: 0.2,
+    })
+  } else {
+    console.error('home_hero_sidebar_container or page-wrapper not found')
+  }
+}

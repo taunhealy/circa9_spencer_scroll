@@ -1,0 +1,4 @@
+[[headers]]
+  for = "/src/main.js"
+  [headers.values]
+    Access-Control-Allow-Origin = "https://circa9-spencer-0bca73465eb5a59bd1e1d0c3.webflow.io"
