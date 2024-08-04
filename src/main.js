@@ -411,9 +411,9 @@ document.addEventListener('DOMContentLoaded', function () {
   // Attach event listeners to navigation buttons
   const navButtons = [
     { id: '#nav_work', target: '#work_wrap' },
-    { id: '#nav_about', target: '#about_wrap' },
+    { id: '#nav_about', target: '#about-section' },
     { id: '#nav_contact', target: '#contact_wrap' },
-    { id: '#footer_about', target: '#about_wrap' },
+    { id: '#footer_about', target: '#about-section' },
     { id: '#footer_work', target: '#work_wrap' },
     { id: '#footer_contact', target: '#contact_wrap' },
   ]
@@ -424,89 +424,6 @@ document.addEventListener('DOMContentLoaded', function () {
       element.addEventListener('click', () => scrollToSection(button.target))
     } else {
       console.error(`Navigation button with ID "${button.id}" not found`)
-    }
-  })
-})
-
-// About text fade on hover
-document.addEventListener('DOMContentLoaded', function () {
-  const collectionItems = document.querySelectorAll('.about-me_collection-item')
-  const aboutText = document.getElementById('about_text')
-  const socialLink = document.getElementById('about_link')
-
-  const originalText = aboutText ? aboutText.textContent : ''
-
-  if (!aboutText) {
-    console.error('Element with ID "about_text" not found')
-  }
-
-  if (!socialLink) {
-    console.error('Element with ID "about_link" not found')
-  }
-
-  collectionItems.forEach((item) => {
-    const descriptionDiv = item.querySelector('div[data-description]')
-    const description = descriptionDiv
-      ? descriptionDiv.getAttribute('data-description')
-      : null
-    const image = item.querySelector('.about-me_image')
-
-    if (!description) {
-      console.error('No data-description found for:', item)
-    }
-
-    if (!image) {
-      console.error('No image element found for:', item)
-    } else {
-      image.addEventListener('mouseenter', () => {
-        if (aboutText) {
-          gsap.fromTo(
-            aboutText,
-            { opacity: 1 },
-            {
-              opacity: 0,
-              duration: 0.3,
-              onComplete: () => {
-                aboutText.textContent = description
-                gsap.fromTo(
-                  aboutText,
-                  { opacity: 0 },
-                  { opacity: 1, duration: 0.3 }
-                )
-              },
-            }
-          )
-        }
-      })
-
-      image.addEventListener('click', () => {
-        if (socialLink) {
-          window.open(socialLink.href, socialLink.target)
-        } else {
-          console.error('Social link element is missing')
-        }
-      })
-
-      image.addEventListener('mouseleave', () => {
-        if (aboutText) {
-          gsap.fromTo(
-            aboutText,
-            { opacity: 1 },
-            {
-              opacity: 0,
-              duration: 0.3,
-              onComplete: () => {
-                aboutText.textContent = originalText
-                gsap.fromTo(
-                  aboutText,
-                  { opacity: 0 },
-                  { opacity: 1, duration: 0.3 }
-                )
-              },
-            }
-          )
-        }
-      })
     }
   })
 })
@@ -586,12 +503,12 @@ document.addEventListener('DOMContentLoaded', () => {
     })
   })
 
-  // Set initial image and active state
-  if (heroWorkSelectsItems.length > 0) {
-    const firstItemImage =
-      heroWorkSelectsItems[0].querySelector('.work_card_image-1')
-    if (firstItemImage) {
-      setBackgroundImage(firstItemImage.src, heroWorkSelectsItems[0])
+  // Set initial image and active state to the second item (index 1)
+  if (heroWorkSelectsItems.length > 1) {
+    const secondItemImage =
+      heroWorkSelectsItems[1].querySelector('.work_card_image-1')
+    if (secondItemImage) {
+      setBackgroundImage(secondItemImage.src, heroWorkSelectsItems[1])
     }
   }
 })
@@ -758,16 +675,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // ScrollTrigger for about section
     ScrollTrigger.create({
       trigger: aboutSection,
-      start: 'top bottom',
-      end: 'top center',
+      start: 'top 30%',
+      end: 'top 10%',
       onEnter: () => {
         gsap.to(workSelectsListHero, {
           opacity: 0,
           duration: 0.5,
         })
         gsap.to(aboutProfileContainer, {
-          opacity: 1,
+          opacity: 0.8,
           duration: 0.5,
+          ease: 'power3.in',
         })
         gsap.to(workFilterCategoriesButtons, {
           opacity: 0,
@@ -776,11 +694,11 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       onLeaveBack: () => {
         gsap.to(workSelectsListHero, {
-          opacity: 0,
+          opacity: 1,
           duration: 0.5,
         })
         gsap.to(aboutProfileContainer, {
-          opacity: 0,
+          opacity: 0.3,
           duration: 0.5,
         })
         gsap.to(workFilterCategoriesButtons, {

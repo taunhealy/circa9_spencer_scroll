@@ -174,11 +174,6 @@ html.lenis body {
   border-radius: 20px;
 }
 
-.about-me_collection-item:hover .about-me_image {
-  cursor: pointer;
-  opacity: 0.8;
-}
-
 /* Ensure the initial state does not have blur */
 .menu_background-2 {
   filter: none;
@@ -210,7 +205,7 @@ html.lenis body {
 }
 
 .page-wrapper {
-  opacity: 0;
+  opacity: 1;
   position: relative;
   z-index: 1;
 
@@ -231,9 +226,13 @@ html.lenis body {
 
 body {
   position: relative;
-  box-sizing: border-box;
+  box-sizing: border-box; 
   overflow: hidden;
+  /* visibility: hidden; */
+  /* opacity: 0; */
+  /* transition: opacity 0.3s ease; */
 }
+
 
 .work_selects_item {
   /* ... existing styles ... */
@@ -262,7 +261,10 @@ body {
   opacity: 0;
 }
 
-
+/* Add this new rule */
+#about-section {
+  scroll-margin-top: 100px; /* Adjust this value based on your layout */
+}
 
 /*
 .mouse-cursor_container {
