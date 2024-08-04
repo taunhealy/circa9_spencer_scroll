@@ -789,4 +789,3 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 })
 
-// ... rest of the code ...
